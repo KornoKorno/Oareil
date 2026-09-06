@@ -173,9 +173,17 @@ function majSaisie(v) {
   if (b) b.disabled = (n < 15 || n > MAX_CAR);
 }
 
-function choisir(i) {
-  const ok = Sync.reserver(CAS[i].n);
-  if (!ok) { rendre(); return; }
+let reservationEnCours = false;
+
+async function choisir(i) {
+  if (reservationEnCours) return;
+  reservationEnCours = true;
+  document.querySelectorAll(".opt").forEach(b => b.disabled = true);
+
+  const ok = await Sync.reserver(CAS[i].n);
+  reservationEnCours = false;
+
+  if (!ok) { rendre(); return; }   // pris entre-temps : la liste se remet à jour
   S.groupe = i;
   S.etape = 1;
   rendre();

@@ -1,0 +1,27 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "sessions": {
+      "oareil-2026-09-11": {
+        "groupes": {
+          ".read": true,
+
+          "$groupe": {
+            ".write": "$groupe.matches(/^[1-3]$/)",
+            ".validate": "newData.hasChild('pris')",
+
+            "pris":   { ".validate": "newData.isBoolean()" },
+            "statut": { ".validate": "newData.isString() && newData.val().length <= 20" },
+            "ia":     { ".validate": "newData.isString() && newData.val().length <= 3000" },
+            "final":  { ".validate": "newData.isString() && newData.val().length <= 3000" },
+            "heure":  { ".validate": "newData.isNumber()" },
+
+            "$autre": { ".validate": false }
+          }
+        }
+      }
+    }
+  }
+}

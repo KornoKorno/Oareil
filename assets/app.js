@@ -5,7 +5,7 @@
    relais, le repli restant le filet en cas d'échec ou de lenteur.
    ------------------------------------------------------------------ */
 
-const APPEL_API = false;      // ← passera à true en tranche 3
+const APPEL_API = true;       // appel réel à l'API
 const DELAI_MAX = 10000;      // au-delà, on sert le repli sans rien dire
 const MAX_CAR   = 280;
 

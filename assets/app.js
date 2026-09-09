@@ -8,6 +8,7 @@
 const APPEL_API = true;       // appel réel à l'API
 const DELAI_MAX = 15000;      // au-delà, on sert le repli sans rien dire
 const MAX_CAR   = 280;        // plafond de la SAISIE du groupe, jamais de la sortie
+const MIN_CAR   = 70;         // en deçà, l'IA n'a rien à traiter et invente tout
 
 /* Le bouton « Exemple » ne doit exister qu'en répétition : le jour J,
    un groupe pressé pourrait s'en servir et afficher à l'écran une
@@ -33,6 +34,17 @@ const S = {
 };
 
 const $ = id => document.getElementById(id);
+
+/* Aux étapes 2 et 3, le cas et la demande du groupe restent sous les yeux :
+   sans eux, le texte généré arrive sans antécédent et le lien se perd. */
+function rappel(c) {
+  return `<div class="cas" style="margin-bottom:15px">
+    <div class="lg">Votre cas · groupe ${c.n}</div>
+    <div class="tx">${echapper(c.consigne)}</div>
+    <div class="lg" style="margin-top:11px">Ce que vous avez demandé</div>
+    <div class="tx">${echapper(S.formulation)}</div>
+  </div>`;
+}
 const vue = () => $("vue");
 
 /* ---------- rendu ---------- */
@@ -74,20 +86,20 @@ function rendre() {
       ${jauge(1)}
       <div class="corps">
         <div class="etape">Étape 1 · Consigne</div>
-        <h1 class="titre">Ce que le groupe a retenu</h1>
-        <p class="chapo">Recopiez la formulation choisie ensemble à partir de vos post-it.</p>
+        <h1 class="titre">Votre demande à l'IA</h1>
+        <p class="chapo">À partir de vos post-it : sur quoi voulez-vous que la mise en situation insiste, et qu'est-ce qu'elle doit éviter ? Vous décrivez une commande, pas une réponse.</p>
         <div class="cas">
           <div class="lg">Votre cas</div>
           <div class="tx">${echapper(c.consigne)}</div>
         </div>
-        <label class="lbl" for="saisie">Votre formulation</label>
+        <label class="lbl" for="saisie">Votre demande</label>
         <textarea id="saisie" rows="5" maxlength="${MAX_CAR + 40}"
-          placeholder="Tapez ce que le groupe a retenu…"
+          placeholder="Ex. : montrer le moment du refus et l'hésitation du professionnel, sans qu'il trouve la solution…"
           oninput="majSaisie(this.value)">${echapper(S.formulation)}</textarea>
         <div class="compteur ${n > MAX_CAR ? "trop" : ""}" id="cpt">${n} / ${MAX_CAR}</div>
       </div>
       <div class="pied">
-        <button class="act plein" id="btn" ${n < 15 || n > MAX_CAR ? "disabled" : ""}
+        <button class="act plein" id="btn" ${n < MIN_CAR || n > MAX_CAR ? "disabled" : ""}
           onclick="generer()">Générer une proposition</button>
         <p class="micro">Un seul appel, pour tout le groupe.</p>
       </div>`;
@@ -111,6 +123,7 @@ function rendre() {
         <div class="etape">Étape 2 · Génération</div>
         <h1 class="titre">Une proposition à discuter</h1>
         <p class="chapo">Lisez-la ensemble avant de la juger.</p>
+        ${rappel(c)}
         <div class="carte">
           <span class="tag">Proposition de l'IA</span>
           <div class="texte">${echapper(S.ia)}</div>
@@ -129,8 +142,9 @@ function rendre() {
         <div class="etape crit">Étape 3 · Regard critique</div>
         <h1 class="titre">À vous de jouer</h1>
         <p class="chapo">Chacun répond d'abord sur post-it. Le scribe modifie ensuite le texte.</p>
+        ${rappel(c)}
         <label class="lbl" for="travail">Texte modifiable</label>
-        <textarea id="travail" class="crit" rows="11"
+        <textarea id="travail" class="crit" rows="9"
           oninput="S.travail = this.value">${echapper(S.travail)}</textarea>
         <div class="questions">
           <div class="lg">Les trois questions</div>
@@ -188,7 +202,7 @@ function majSaisie(v) {
   const cpt = $("cpt");
   if (cpt) { cpt.textContent = `${n} / ${MAX_CAR}`; cpt.classList.toggle("trop", n > MAX_CAR); }
   const b = $("btn");
-  if (b) b.disabled = (n < 15 || n > MAX_CAR);
+  if (b) b.disabled = (n < MIN_CAR || n > MAX_CAR);
 }
 
 let reservationEnCours = false;

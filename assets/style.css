@@ -182,10 +182,14 @@ body.mur{
 }
 .trace{ font-size:16px; line-height:1.75; color:#C9DDDA; overflow-y:auto; flex:1; }
 .trace ins{
-  background:rgba(242,161,92,.17); color:var(--w-accent);
-  text-decoration:none; font-weight:600; border-radius:2px; padding:0 3px;
+  background:rgba(242,161,92,.22); color:#F7B77C;
+  text-decoration:none; font-weight:700; font-size:1.04em;
+  border-radius:3px; padding:1px 4px;
 }
-.trace .eteint{ color:#22453F; transition:color .7s ease; }
+/* Mode « seulement les ajouts » : le texte de l'IA passe en retrait mais
+   reste entièrement lisible en projection (contraste 5,5:1 au lieu de
+   1,4:1 auparavant, où il disparaissait selon le vidéoprojecteur). */
+.trace .eteint{ color:#8AA5A1; transition:color .7s ease; }
 
 .vide-corps{ display:flex; flex-direction:column; justify-content:center; flex:1; gap:12px; }
 .points{ display:flex; gap:6px; }

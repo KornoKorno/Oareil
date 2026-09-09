@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Écran témoin — Oareil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body class="mur">
+
+  <header class="mur-tete">
+    <div>
+      <h1>Ce que les groupes ont retenu</h1>
+      <p class="sous" id="sous">Atelier en cours</p>
+    </div>
+    <span class="cpt" id="compteur">0 / 3 groupes</span>
+  </header>
+
+  <section class="colonnes" id="colonnes"></section>
+
+  <footer class="mur-pied">
+    <span class="legende"><span class="pastille"></span> Ce que le groupe a ajouté ou modifié</span>
+    <span class="mode-actif" id="mode">Mode <b>traces complètes</b></span>
+  </footer>
+
+  <!-- voile projeté à 13h45 -->
+  <div class="voile" id="voile" hidden>
+    <h2>Scannez pour commencer</h2>
+    <div class="qr" id="qr"></div>
+    <div class="adresse" id="adresse"></div>
+    <p class="aide">Un seul téléphone par table suffit.</p>
+  </div>
+
+  <!-- aide clavier, touche ? -->
+  <div class="raccourcis" id="raccourcis" hidden>
+    <div class="t">Raccourcis</div>
+    <div><kbd>T</kbd> traces complètes</div>
+    <div><kbd>A</kbd> seulement les ajouts</div>
+    <div><kbd>Q</kbd> voile QR / adresse</div>
+    <div id="touches-demo"><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> injecter une trace (répétition)</div>
+    <div><kbd>R</kbd> réinitialiser — deux fois</div>
+    <div><kbd>Esc</kbd> tout refermer</div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database-compat.js"></script>
+  <script src="/assets/cas.js"></script>
+  <script src="/assets/sync.js"></script>
+  <script src="/assets/ecran.js"></script>
+</body>
+</html>

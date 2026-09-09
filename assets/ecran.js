@@ -10,6 +10,12 @@
 
 let MODE = "traces";      // "traces" | "ajouts"
 let confirmeReset = false;
+let minuteurReset = null;
+
+/* Les touches 1 2 3 injectent une trace de démonstration. Le jour J
+   elles écraseraient le travail réel d'un groupe : elles n'existent
+   donc que sur /ecran.html?repet=1 */
+const REPETITION = new URLSearchParams(location.search).has("repet");
 
 const $ = id => document.getElementById(id);
 
@@ -63,14 +69,30 @@ function voile(afficher) {
 }
 
 function injecter(i) {
+  if (!REPETITION) return;
   const c = CAS[i];
+  const d = Sync.etat().groupes[c.n];
+  if (d && d.final) return;          // jamais par-dessus une trace réelle
   Sync.reserver(c.n);
   Sync.envoyer(c.n, { ia: c.repli, final: c.exemple });
 }
 
+/* La remise à zéro demande deux appuis. Sans retour visible, le premier
+   appui ne se voyait pas et on croyait la touche morte. */
+function armerReset(actif) {
+  confirmeReset = actif;
+  clearTimeout(minuteurReset);
+  if (actif) {
+    $("mode").innerHTML = "Appuyez de nouveau sur <b>R</b> pour tout effacer";
+    minuteurReset = setTimeout(() => { confirmeReset = false; rafraichir(); }, 5000);
+  } else {
+    rafraichir();
+  }
+}
+
 document.addEventListener("keydown", e => {
   const k = e.key.toLowerCase();
-  if (k !== "r") confirmeReset = false;
+  if (k !== "r" && confirmeReset) armerReset(false);
 
   if (k === "t") basculer("traces");
   else if (k === "a") basculer("ajouts");
@@ -81,8 +103,8 @@ document.addEventListener("keydown", e => {
   else if (k === "2") injecter(1);
   else if (k === "3") injecter(2);
   else if (k === "r") {
-    if (confirmeReset) { Sync.reset(); MODE = "traces"; confirmeReset = false; }
-    else { confirmeReset = true; }
+    if (confirmeReset) { Sync.reset(); MODE = "traces"; armerReset(false); }
+    else { armerReset(true); }
   }
 });
 
@@ -103,5 +125,10 @@ document.addEventListener("keydown", e => {
   cible.innerHTML = '<span style="color:#63807C;font-size:14px;text-align:center">'
     + "Tapez l'adresse ci-dessous</span>";
 })();
+
+if (!REPETITION) {
+  const bloc = document.getElementById("touches-demo");
+  if (bloc) bloc.hidden = true;
+}
 
 Sync.init(rendre);

@@ -13,6 +13,15 @@
    ------------------------------------------------------------------ */
 
 const CAS_CONNUS = [1, 2, 3];
+
+/* La situation de départ vit ici, côté serveur : c'est elle qui ancre
+   la génération. Sans elle, le modèle ne recevait que les 280 caractères
+   du groupe et inventait toute la scène autour — c'était le défaut. */
+const SITUATIONS = {
+  1: "Une personne âgée accompagnée à domicile refuse l'aide à la toilette.",
+  2: "La fille d'un résident téléphone à l'établissement pour avoir des nouvelles de son père. Le père présente des troubles cognitifs et n'a jamais dit ce qu'il souhaitait que l'on partage avec sa famille.",
+  3: "Un résident accompagné depuis plusieurs mois est dans ses derniers jours. Sa famille est présente, et le professionnel doit trouver la place qu'il prend auprès d'elle."
+};
 const MAX_CAR = 280;      // plafond de la SAISIE du groupe, jamais de la sortie
 
 /* Le modèle raisonne avant de répondre, et ce raisonnement consomme le
@@ -25,7 +34,9 @@ const SYSTEME = `Tu aides un formateur du secteur médico-social à préparer un
 
 À partir de la situation qu'il te donne, rédige une mise en situation de 90 à 120 mots, destinée à être discutée en groupe par des professionnels de l'accompagnement.
 
-Décris la scène et la conduite du professionnel, sans donner de solution ni de morale. Reste au présent, dans un registre professionnel sobre.
+Tu reçois une situation de départ, puis ce que le groupe de formateurs a retenu et souhaite voir traité. La situation de départ commande : ne change ni son sujet ni son cadre. Ce que le groupe a retenu indique l'angle — insiste dessus.
+
+Plante la scène, puis arrête-toi au moment où le professionnel doit agir. Ne raconte pas comment il s'en sort, ne donne ni solution ni morale. Reste au présent, dans un registre professionnel sobre. Va à l'essentiel : pas de décor inutile.
 
 Anonymat : désigne les personnes accompagnées par une civilité suivie d'une initiale — Mme R., M. T. — et jamais par un prénom. Les professionnels sont désignés par leur fonction : l'aide-soignante, le professionnel, l'infirmière. Les âges peuvent être précisés. La situation est fictive.
 
@@ -64,7 +75,9 @@ export default async function handler(req, res) {
         model: "claude-sonnet-5",
         max_tokens: MAX_JETONS,
         system: SYSTEME,
-        messages: [{ role: "user", content: texte }]
+        messages: [{ role: "user", content:
+          `Situation de départ :\n${SITUATIONS[Number(cas)]}\n\n` +
+          `Ce que le groupe a retenu et souhaite voir traité :\n${texte}` }]
       })
     });
 

@@ -6,8 +6,22 @@
    ------------------------------------------------------------------ */
 
 const APPEL_API = true;       // appel réel à l'API
-const DELAI_MAX = 10000;      // au-delà, on sert le repli sans rien dire
-const MAX_CAR   = 280;
+const DELAI_MAX = 15000;      // au-delà, on sert le repli sans rien dire
+const MAX_CAR   = 280;        // plafond de la SAISIE du groupe, jamais de la sortie
+
+/* Le bouton « Exemple » ne doit exister qu'en répétition : le jour J,
+   un groupe pressé pourrait s'en servir et afficher à l'écran une
+   contribution qui n'est pas la sienne. Il n'apparaît donc que si
+   l'adresse porte ?repet=1 — par exemple oareil.vercel.app/?repet=1 */
+const REPETITION = new URLSearchParams(location.search).has("repet");
+
+/* Un texte utilisable se termine par une ponctuation de fin. Sinon
+   c'est une génération coupée : on sert le repli, personne ne le voit. */
+function texteUtilisable(t) {
+  if (typeof t !== "string") return false;
+  const x = t.trim();
+  return x.length >= 200 && /[.!?…»]$/.test(x);
+}
 
 const S = {
   etape: 0,        // 0 accueil · 1 consigne · 1.5 attente · 2 lecture · 3 critique · 5 trace
@@ -124,11 +138,15 @@ function rendre() {
         </div>
       </div>
       <div class="pied">
+        ${REPETITION ? `
         <div class="rang">
           <button class="act creux" onclick="exemple()">Exemple</button>
           <button class="act plein crit" onclick="aller(5)">Valider ce texte</button>
         </div>
-        <p class="micro">« Exemple » remplit le champ — pour la répétition seulement.</p>
+        <p class="micro">« Exemple » remplit le champ — répétition seulement.</p>`
+        : `
+        <button class="act plein crit" onclick="aller(5)">Valider ce texte</button>
+        <p class="micro">Ce que vous ajoutez ici apparaîtra à l'écran de la salle.</p>`}
       </div>`;
     return;
   }
@@ -210,7 +228,7 @@ async function generer() {
       clearTimeout(minuteur);
       if (r.ok) {
         const d = await r.json();
-        if (d && d.texte) texte = d.texte;
+        if (d && texteUtilisable(d.texte)) texte = d.texte;
       }
     } catch (_) { /* silence : le repli prend la main */ }
   } else {

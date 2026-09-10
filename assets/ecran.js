@@ -47,10 +47,11 @@ function rendre(etat) {
   $("colonnes").innerHTML = CAS.map(c => colonne(c, etat.groupes[c.n])).join("");
   const n = CAS.filter(c => etat.groupes[c.n] && etat.groupes[c.n].final).length;
   $("compteur").textContent = `${n} / 3 groupes`;
-  $("sous").textContent =
-    n === 0 ? "Atelier en cours" :
-    n < 3   ? "Les traces arrivent" :
-              "Les trois traces sont là";
+  $("sous").textContent = !Sync.distant()
+    ? "⚠ Hors ligne — les téléphones n'atteignent pas cet écran"
+    : n === 0 ? "Atelier en cours" :
+      n < 3   ? "Les traces arrivent" :
+                "Les trois traces sont là";
   $("mode").innerHTML = MODE === "traces"
     ? "Mode <b>traces complètes</b>"
     : "Mode <b>seulement les ajouts</b>";

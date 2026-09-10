@@ -25,10 +25,11 @@ const SITUATIONS = {
 const MAX_CAR = 280;      // plafond de la SAISIE du groupe, jamais de la sortie
 
 /* Le modèle raisonne avant de répondre, et ce raisonnement consomme le
-   même quota de jetons que la réponse. Avec 400, il ne restait plus de
-   quoi terminer la phrase : le texte arrivait coupé en plein mot.
-   1500 laisse largement la place au raisonnement et au texte. */
-const MAX_JETONS = 1500;
+   même quota de jetons que la réponse. Sonnet 5 utilise un nouveau
+   tokenizer plus dense et un raisonnement adaptatif activé par défaut :
+   1500 ne laissait plus de place pour terminer la phrase, le texte
+   arrivait tronqué. 4000 couvre largement raisonnement + texte. */
+const MAX_JETONS = 4000;
 
 const SYSTEME = `Tu aides un formateur du secteur médico-social à préparer un support pédagogique.
 

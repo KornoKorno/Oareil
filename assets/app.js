@@ -6,7 +6,7 @@
    ------------------------------------------------------------------ */
 
 const APPEL_API = true;       // appel réel à l'API
-const DELAI_MAX = 15000;      // au-delà, on sert le repli sans rien dire
+const DELAI_MAX = 25000;      // au-delà, on sert le repli sans rien dire
 const MAX_CAR   = 280;        // plafond de la SAISIE du groupe, jamais de la sortie
 const MIN_CAR   = 70;         // en deçà, l'IA n'a rien à traiter et invente tout
 
@@ -249,6 +249,8 @@ async function generer() {
     await new Promise(r => setTimeout(r, 1700));
   }
 
+  if (REPETITION && !texte) console.warn("[repet] repli servi — l'API n'a pas répondu");
+
   S.ia = texte || CAS[S.groupe].repli;
   S.travail = S.ia;
   S.etape = 2;
@@ -271,8 +273,13 @@ function telecharger() {
 }
 
 async function versEcran() {
-  await Sync.envoyer(CAS[S.groupe].n, { ia: S.ia, final: S.travail });
-  S.envoye = true;
+  try {
+    await Sync.envoyer(CAS[S.groupe].n, { ia: S.ia, final: S.travail });
+    S.envoye = true;
+  } catch (e) {
+    console.warn("[app] envoi refusé :", e && e.message);
+    alert("L'envoi vers l'écran n'a pas fonctionné. Réessayez, ou montrez ce texte à l'animateur.");
+  }
   rendre();
 }
 
